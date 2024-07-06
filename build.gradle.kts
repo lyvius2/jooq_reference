@@ -38,7 +38,8 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-    jooqGenerator("com.mysql:mysql-connector-j")
+    //jooqGenerator("com.mysql:mysql-connector-j")
+    jooqGenerator(project(":jOOQ-custom"))
     jooqGenerator("org.jooq:jooq:${jooqVersion}")
     jooqGenerator("org.jooq:jooq-meta:${jooqVersion}")
     jooqGenerator("jakarta.xml.bind:jakarta.xml.bind-api:4.0.0")
@@ -70,6 +71,7 @@ jooq {
                     database.apply {
                         name = "org.jooq.meta.mysql.MySQLDatabase"
                         inputSchema = "sakila"
+                        isUnsignedTypes = false
                     }
                     generate.apply {
                         isDaos = true
@@ -80,6 +82,9 @@ jooq {
                     }
                     target.apply {
                         directory = "src/generated"
+                    }
+                    strategy.apply {
+                        name = "jooq.custom.generator.JPrefixGeneratorStrategy"
                     }
                 }
             }
