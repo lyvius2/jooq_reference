@@ -1,17 +1,18 @@
 package com.walter.reference.actor.repository
 
-import org.jooq.Condition
+import com.walter.reference.actor.dto.ActorFilmography
+import com.walter.reference.actor.dto.ActorFilmographySearchCondition
+import com.walter.reference.utils.jooq.JooqListConditionUtil
 import org.jooq.Configuration
 import org.jooq.DSLContext
-import org.jooq.TableField
 import org.jooq.generated.tables.JActor
+import org.jooq.generated.tables.JFilm
+import org.jooq.generated.tables.JFilmActor
 import org.jooq.generated.tables.daos.ActorDao
 import org.jooq.generated.tables.pojos.Actor
-import org.jooq.generated.tables.records.ActorRecord
-import org.jooq.impl.DSL
+import org.jooq.generated.tables.pojos.Film
 import org.jooq.types.UInteger
 import org.springframework.stereotype.Repository
-import org.springframework.util.CollectionUtils
 
 @Repository
 class ActorRepository(
@@ -46,15 +47,31 @@ class ActorRepository(
                 .toList()
         }
         return dslContext.selectFrom(ACTOR)
-            .where(inIfNotEmpty(ACTOR.ACTOR_ID, uIntegerIds))
+            .where(JooqListConditionUtil.inIfNotEmpty(ACTOR.ACTOR_ID, uIntegerIds))
             .fetchInto(Actor::class.java)
     }
 
-    private fun inIfNotEmpty(actorId: TableField<ActorRecord, UInteger?>, uIntegerIds: List<UInteger>?): Condition {
-        if (CollectionUtils.isEmpty(uIntegerIds)) {
-            return DSL.noCondition()
-        }
-        return actorId.`in`(uIntegerIds)
-    }
+    fun findFilmography(condition: ActorFilmographySearchCondition): List<ActorFilmography> {
+        val FILM_ACTOR = JFilmActor.FILM_ACTOR
+        val FILM = JFilm.FILM
 
+        val actorListMap = dslContext.select(
+                ACTOR,
+                FILM,
+            )
+            .from(ACTOR)
+            .join(FILM_ACTOR).on(FILM_ACTOR.ACTOR_ID.eq(ACTOR.ACTOR_ID))
+            .join(FILM).on(FILM.FILM_ID.eq(FILM_ACTOR.FILM_ID))
+            .where(
+                JooqListConditionUtil.containsIfNotBlank(ACTOR.FIRST_NAME.concat(" ").concat(ACTOR.LAST_NAME), condition.actorName),
+                JooqListConditionUtil.containsIfNotBlank(FILM.TITLE, condition.filmTitle)
+            )
+            .fetchGroups(
+                { record -> record[ACTOR.name, Actor::class.java] },
+                { record -> record[FILM.name, Film::class.java] }
+            )
+        return actorListMap.entries.stream()
+            .map { ActorFilmography(it.key, it.value) }
+            .toList()
+    }
 }
