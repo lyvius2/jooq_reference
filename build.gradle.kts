@@ -1,3 +1,6 @@
+import org.jooq.impl.SQLDataType
+import org.jooq.meta.jaxb.ForcedType
+
 plugins {
     id("org.springframework.boot") version "3.2.7"
     id("io.spring.dependency-management") version "1.1.5"
@@ -57,7 +60,7 @@ tasks.withType<Test> {
 
 jooq {
     version = jooqVersion
-
+    edition.set(nu.studer.gradle.jooq.JooqEdition.OSS)
     configurations {
         create("sakilaDb") {
             jooqConfiguration.apply {
@@ -71,7 +74,15 @@ jooq {
                     database.apply {
                         name = "org.jooq.meta.mysql.MySQLDatabase"
                         inputSchema = "sakila"
-                        isUnsignedTypes = false
+                        isUnsignedTypes = true
+                        forcedTypes.addAll(
+                            listOf(
+                                ForcedType().apply {
+                                    userType = "java.lang.Long"
+                                    includeTypes = "INTEGERUNSIGNED"
+                                }
+                            )
+                        )
                     }
                     generate.apply {
                         isDaos = true
