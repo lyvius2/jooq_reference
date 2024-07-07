@@ -28,12 +28,14 @@ class JooqSubqueryTest(
     @DisplayName("평균 대여 기간이 가장 긴 영화부터 정렬해서 조회한다.")
     fun fromSubqueryTest() {
         // given
-
+        val filmTitle = "EGG"
 
         // when
+        val filmRentalSummaries = filmRepository.findFilmRentalSummaryByFilmTitle(filmTitle)
 
         // then
-
+        assertThat(filmRentalSummaries).isNotNull
+        filmRentalSummaries.forEach { assertThat(it.averageRentalDuration).isNotNull() }
     }
 
     @Test
