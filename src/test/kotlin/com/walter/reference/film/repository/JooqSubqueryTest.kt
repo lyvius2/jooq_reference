@@ -20,7 +20,7 @@ class JooqSubqueryTest(
         val filmPriceSummaries = filmRepository.findFilmPriceSummaryByFilmTitle(filmTitle)
 
         // then
-        assertThat(filmPriceSummaries).isNotNull
+        assertThat(filmPriceSummaries).isNotEmpty
         filmPriceSummaries.forEach { assertThat(it.totalInventory).isNotNull() }
     }
 
@@ -34,7 +34,7 @@ class JooqSubqueryTest(
         val filmRentalSummaries = filmRepository.findFilmRentalSummaryByFilmTitle(filmTitle)
 
         // then
-        assertThat(filmRentalSummaries).isNotNull
+        assertThat(filmRentalSummaries).isNotEmpty
         filmRentalSummaries.forEach { assertThat(it.averageRentalDuration).isNotNull() }
     }
 
@@ -42,10 +42,12 @@ class JooqSubqueryTest(
     @DisplayName("대여된 기록이 있는 영화만 조회")
     fun whereSubqueryTest() {
         // given
+        val filmTitle = "EGG"
 
         // when
+        val films = filmRepository.findRentedFilmByTitle(filmTitle)
 
         // then
-
+        assertThat(films).isNotEmpty
     }
 }

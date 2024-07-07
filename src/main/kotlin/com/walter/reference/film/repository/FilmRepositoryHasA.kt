@@ -18,6 +18,7 @@ import org.jooq.impl.DSL.field
 import org.jooq.impl.DSL.inline
 import org.jooq.impl.DSL.select
 import org.jooq.impl.DSL.selectCount
+import org.jooq.impl.DSL.selectOne
 import org.jooq.types.UInteger
 import org.jooq.types.UShort
 import org.springframework.stereotype.Repository
@@ -84,6 +85,23 @@ class FilmRepositoryHasA(
             .where(JooqListConditionUtil.containsIfNotBlank(FILM.TITLE, filmTitle))
             .orderBy(field(DSL.name("average_rental_duration")).desc())
             .fetchInto(FilmRentalSummary::class.java)
+    }
+
+    fun findRentedFilmByTitle(filmTitle: String): List<Film> {
+        val FILM: JFilm = JFilm.FILM
+        val INVENTORY: JInventory = JInventory.INVENTORY
+        val RENTAL: JRental = JRental.RENTAL
+
+        val rentedExistsSubquery = selectOne()
+            .from(INVENTORY)
+            .join(RENTAL)
+            .on(INVENTORY.INVENTORY_ID.eq(RENTAL.INVENTORY_ID))
+            .where(INVENTORY.FILM_ID.eq(FILM.FILM_ID))
+
+        return dslContext.selectFrom(FILM)
+            .whereExists(rentedExistsSubquery)
+            .and(JooqListConditionUtil.containsIfNotBlank(FILM.TITLE, filmTitle))
+            .fetchInto(Film::class.java)
     }
 }
 
