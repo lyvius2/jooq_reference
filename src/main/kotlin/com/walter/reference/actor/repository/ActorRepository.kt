@@ -11,6 +11,8 @@ import org.jooq.generated.tables.JFilmActor
 import org.jooq.generated.tables.daos.ActorDao
 import org.jooq.generated.tables.pojos.Actor
 import org.jooq.generated.tables.pojos.Film
+import org.jooq.generated.tables.records.ActorRecord
+import org.jooq.impl.DSL
 import org.jooq.types.UInteger
 import org.springframework.stereotype.Repository
 
@@ -73,5 +75,50 @@ class ActorRepository(
         return actorListMap.entries.stream()
             .map { ActorFilmography(it.key, it.value) }
             .toList()
+    }
+
+    fun saveByDao(actor: Actor): Actor {
+        actorDao.insert(actor)
+        return actor
+    }
+
+    fun saveByRecord(actor: Actor): ActorRecord {
+        val actorRecord: ActorRecord = dslContext.newRecord(ACTOR, actor)
+        actorRecord.insert()
+        return actorRecord
+    }
+
+    fun saveWithReturningKey(actor: Actor): Long? {
+        return dslContext.insertInto(
+            ACTOR,
+            ACTOR.FIRST_NAME,
+            ACTOR.LAST_NAME
+        ).values(
+            actor.firstName,
+            actor.lastName
+        ).returningResult(ACTOR.ACTOR_ID).fetchOneInto(Long::class.java)
+    }
+
+    fun saveWithReturning(actor: Actor): Actor? {
+        return dslContext.insertInto(
+            ACTOR,
+            ACTOR.FIRST_NAME,
+            ACTOR.LAST_NAME
+        ).values(
+            actor.firstName,
+            actor.lastName
+        ).returning(*ACTOR.fields()).fetchOneInto(Actor::class.java)
+    }
+
+    fun bulkInsert(actors: MutableList<Actor>) {
+        val rows = actors.stream()
+            .map { DSL.row(it.firstName, it.lastName) }
+            .toList()
+
+        dslContext.insertInto(
+            ACTOR,
+            ACTOR.FIRST_NAME,
+            ACTOR.LAST_NAME
+        ).valuesOfRows(rows).execute()
     }
 }
