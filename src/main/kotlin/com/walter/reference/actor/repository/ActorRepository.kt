@@ -2,9 +2,11 @@ package com.walter.reference.actor.repository
 
 import com.walter.reference.actor.dto.ActorFilmography
 import com.walter.reference.actor.dto.ActorFilmographySearchCondition
+import com.walter.reference.actor.dto.ActorUpdateRequest
 import com.walter.reference.utils.jooq.JooqListConditionUtil
 import org.jooq.Configuration
 import org.jooq.DSLContext
+import org.jooq.Field
 import org.jooq.generated.tables.JActor
 import org.jooq.generated.tables.JFilm
 import org.jooq.generated.tables.JFilmActor
@@ -120,5 +122,28 @@ class ActorRepository(
             ACTOR.FIRST_NAME,
             ACTOR.LAST_NAME
         ).valuesOfRows(rows).execute()
+    }
+
+    fun update(actor: Actor) {
+        actorDao.update(actor)
+    }
+
+    fun findById(actorId: UInteger?): Actor? {
+        return actorDao.findById(actorId)
+    }
+
+    fun updateWithDto(id: Long?, request: ActorUpdateRequest): Int {
+        return dslContext.update(ACTOR)
+            .set(ACTOR.FIRST_NAME, createValidatedSetter(request.firstName, ACTOR.FIRST_NAME))
+            .set(ACTOR.LAST_NAME, createValidatedSetter(request.lastName, ACTOR.LAST_NAME))
+            .where(ACTOR.ACTOR_ID.eq(UInteger.valueOf(id!!)))
+            .execute()
+    }
+
+    private fun <T> createValidatedSetter(value: T, field: Field<T>): Field<T> {
+        if (value == null) {
+            return DSL.noField(field)
+        }
+        return DSL.`val`(value)
     }
 }
