@@ -1,5 +1,6 @@
 package com.walter.reference.film.repository
 
+import com.walter.reference.config.converter.PriceCategoryConverter
 import com.walter.reference.film.dto.FilmPriceSummary
 import com.walter.reference.film.dto.FilmRentalSummary
 import com.walter.reference.utils.jooq.JooqListConditionUtil
@@ -50,7 +51,7 @@ class FilmRepositoryHasA(
                 case_()
                     .`when`(FILM.RENTAL_RATE.le(BigDecimal.valueOf(1.0)), inline("Cheap"))
                     .`when`(FILM.RENTAL_RATE.le(BigDecimal.valueOf(3.0)), inline("Moderate"))
-                    .otherwise(inline("Expensive")).`as`("price_category"),
+                    .otherwise(inline("Expensive")).`as`("price_category").convert(PriceCategoryConverter()),
                 selectCount().from(INVENTORY).where(INVENTORY.FILM_ID.eq(FILM.FILM_ID)).asField<Long>("total_inventory")
             )
             .from(FILM)
