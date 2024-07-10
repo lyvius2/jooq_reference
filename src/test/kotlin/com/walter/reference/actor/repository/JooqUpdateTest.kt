@@ -58,20 +58,56 @@ class JooqUpdateTest(
     @DisplayName("일부 필드만 Update - Record")
     @Transactional
     fun updateWithRecord() {
+        // given
+        val newActor: Actor = Actor()
+        newActor.firstName = "Sherlock"
+        newActor.lastName = "Holmes"
+        val id = actorRepository.saveWithReturningKey(newActor)
+        val request = ActorUpdateRequest("Mycroft")
 
+        // when
+        val updateResult = actorRepository.updateWithRecord(id, request)
+
+        // then
+        val updatedActor = actorRepository.findById(UInteger.valueOf(id!!))
+        assertThat(updatedActor).isNotNull
+        assertThat(updatedActor!!.firstName).isEqualTo(request.firstName)
+        assertThat(updatedActor.lastName).isEqualTo(newActor.lastName)
     }
 
     @Test
     @DisplayName("Delete 예제")
     @Transactional
     fun delete() {
+        // given
+        val newActor: Actor = Actor()
+        newActor.firstName = "John"
+        newActor.lastName = "Watson"
+        val id = actorRepository.saveWithReturningKey(newActor)
 
+        // when
+        val resultCode = actorRepository.delete(id)
+
+        // then
+        assertThat(resultCode).isEqualTo(1)
+        val result = actorRepository.findById(UInteger.valueOf(id!!))
+        assertThat(result).isNull()
     }
 
     @Test
     @DisplayName("Delete 예제 - Record")
     @Transactional
     fun deleteWithRecord() {
+        // given
+        val newActor: Actor = Actor()
+        newActor.firstName = "American"
+        newActor.lastName = "Prometheus"
+        val id = actorRepository.saveWithReturningKey(newActor)
 
+        // when
+        val result = actorRepository.deleteWithRecord(id)
+
+        // then
+        assertThat(result).isEqualTo(1)
     }
 }

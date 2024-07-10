@@ -17,6 +17,7 @@ import org.jooq.generated.tables.records.ActorRecord
 import org.jooq.impl.DSL
 import org.jooq.types.UInteger
 import org.springframework.stereotype.Repository
+import org.springframework.util.StringUtils
 
 @Repository
 class ActorRepository(
@@ -145,5 +146,35 @@ class ActorRepository(
             return DSL.noField(field)
         }
         return DSL.`val`(value)
+    }
+
+    fun updateWithRecord(id: Long?, request: ActorUpdateRequest): Int {
+        val uIntegerId = UInteger.valueOf(id!!)
+        val actorRecord = dslContext.fetchOne(ACTOR, ACTOR.ACTOR_ID.eq(uIntegerId)) ?: return 0
+
+        if (StringUtils.hasText(request.firstName)) {
+            actorRecord.firstName = request.firstName
+        }
+
+        if (StringUtils.hasText(request.lastName)) {
+            actorRecord.lastName = request.lastName
+        }
+
+        return dslContext.update(ACTOR)
+            .set(actorRecord)
+            .where(ACTOR.ACTOR_ID.eq(uIntegerId))
+            .execute()
+    }
+
+    fun delete(id: Long?): Int {
+        return dslContext.deleteFrom(ACTOR)
+            .where(ACTOR.ACTOR_ID.eq(UInteger.valueOf(id!!)))
+            .execute()
+    }
+
+    fun deleteWithRecord(id: Long?): Int {
+        val uIntegerId = UInteger.valueOf(id!!)
+        val actorRecord = dslContext.fetchOne(ACTOR, ACTOR.ACTOR_ID.eq(uIntegerId)) ?: return 0
+        return actorRecord.delete()
     }
 }
