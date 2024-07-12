@@ -151,7 +151,7 @@ class ActorRepository(
     fun updateWithRecord(id: Long?, request: ActorUpdateRequest): Int {
         val uIntegerId = UInteger.valueOf(id!!)
         val actorRecord = dslContext.fetchOne(ACTOR, ACTOR.ACTOR_ID.eq(uIntegerId)) ?: return 0
-
+        
         if (StringUtils.hasText(request.firstName)) {
             actorRecord.firstName = request.firstName
         }
@@ -176,5 +176,10 @@ class ActorRepository(
         val uIntegerId = UInteger.valueOf(id!!)
         val actorRecord = dslContext.fetchOne(ACTOR, ACTOR.ACTOR_ID.eq(uIntegerId)) ?: return 0
         return actorRecord.delete()
+    }
+
+    fun findRecordByActorId(actorId: Long): ActorRecord? {
+        val id = UInteger.valueOf(actorId)
+        return dslContext.fetchOne(ACTOR, ACTOR.ACTOR_ID.eq(id))
     }
 }
