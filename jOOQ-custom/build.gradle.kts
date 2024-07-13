@@ -13,7 +13,7 @@ repositories {
 
 dependencies {
     implementation("org.jooq:jooq-codegen:${jooqVersion}")
-    runtimeOnly("com.mysql:mysql-connector-j")
+    runtimeOnly("com.mysql:mysql-connector-j:9.0.0")
 }
 
 kotlin {
