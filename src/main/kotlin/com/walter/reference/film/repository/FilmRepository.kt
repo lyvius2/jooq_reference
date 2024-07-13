@@ -9,6 +9,7 @@ import org.jooq.generated.tables.JFilmActor
 import org.jooq.generated.tables.pojos.Actor
 import org.jooq.generated.tables.pojos.Film
 import org.jooq.generated.tables.pojos.FilmActor
+import org.jooq.impl.Internal.fields
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -54,6 +55,39 @@ class FilmRepository(
                 film = record.into(FILM).into(Film::class.java),
                 filmActor = record.into(FILM_ACTOR).into(FilmActor::class.java),
                 actor = record.into(ACTOR).into(Actor::class.java)
+            ) }
+    }
+
+    fun findFilmWithActorListImplicitPathJoin(page: Long, pageSize: Long): List<FilmWithActor> {
+        return dslContext.select(
+                *FILM.fields(),
+                *FILM.filmActor().fields(),
+                *FILM.filmActor().actor().fields())
+            .from(FILM)
+            .offset((page - 1) * pageSize)
+            .limit(pageSize)
+            .map { record -> FilmWithActor(
+                film = record.into(FILM).into(Film::class.java),
+                filmActor = record.into(FILM.filmActor()).into(FilmActor::class.java),
+                actor = record.into(FILM.filmActor().actor()).into(Actor::class.java)
+            ) }
+    }
+
+    fun findFilmWithActorListExplicitPathJoin(page: Long, pageSize: Long): List<FilmWithActor> {
+        return dslContext.select(
+                *FILM.fields(),
+                *FILM.filmActor().fields(),
+                *FILM.filmActor().actor().fields())
+            .from(FILM)
+            .join(FILM.filmActor())
+            .join(FILM.filmActor().actor())
+            .offset((page - 1) * pageSize)
+            .limit(pageSize)
+            .fetch()
+            .map { record -> FilmWithActor(
+                film = record.into(FILM).into(Film::class.java),
+                filmActor = record.into(FILM.filmActor()).into(FilmActor::class.java),
+                actor = record.into(FILM.filmActor().actor()).into(Actor::class.java)
             ) }
     }
 }

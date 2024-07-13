@@ -1,6 +1,7 @@
 package com.walter.reference.config
 
 import org.jooq.conf.ExecuteWithoutWhere
+import org.jooq.conf.RenderImplicitJoinType
 import org.springframework.boot.autoconfigure.jooq.DefaultConfigurationCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -14,6 +15,8 @@ class JooqConfig {
             config.settings()
                 .withExecuteUpdateWithoutWhere(ExecuteWithoutWhere.THROW)
                 .withExecuteDeleteWithoutWhere(ExecuteWithoutWhere.THROW)
-                .withRenderSchema(false) }
+                .withRenderSchema(false)
+                .withRenderImplicitJoinToManyType(RenderImplicitJoinType.INNER_JOIN)
+        }
     }
 }
