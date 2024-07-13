@@ -3,3 +3,4 @@ plugins {
 }
 rootProject.name = "reference"
 include("jOOQ-custom")
+include("jpa-entity")

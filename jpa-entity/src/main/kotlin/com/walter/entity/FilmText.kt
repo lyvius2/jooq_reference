@@ -14,7 +14,7 @@ import jakarta.persistence.Table
     name = "film_text",
     indexes = [Index(name = "idx_title_description", columnList = "title, description")]
 )
-class FilmText {
+class FilmText(
     @Id
     @Column(name = "film_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,4 +26,4 @@ class FilmText {
     @Lob
     @Column(name = "description")
     var description: String? = null
-}
+)
