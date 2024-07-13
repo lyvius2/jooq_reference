@@ -67,15 +67,9 @@ jooq {
     configurations {
         create("sakilaDb") {
             jooqConfiguration.apply {
-/*                jdbc.apply {
-                    url = "jdbc:mysql://localhost:3306/sakila"
-                    user = System.getenv("DB_USER")
-                    password = System.getenv("DB_PASSWORD")
-                }*/
                 generator.apply {
                     name = "org.jooq.codegen.KotlinGenerator"
                     database.apply {
-                        //name = "org.jooq.meta.mysql.MySQLDatabase"
                         name = "org.jooq.meta.extensions.jpa.JPADatabase"
                         properties.addAll(
                             listOf(
@@ -89,7 +83,6 @@ jooq {
                                 }
                             )
                         )
-                        //inputSchema = "sakila"
                         isUnsignedTypes = true
                         forcedTypes.addAll(
                             listOf(
