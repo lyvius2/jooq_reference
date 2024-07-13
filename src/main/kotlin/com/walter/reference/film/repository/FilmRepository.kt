@@ -9,7 +9,6 @@ import org.jooq.generated.tables.JFilmActor
 import org.jooq.generated.tables.pojos.Actor
 import org.jooq.generated.tables.pojos.Film
 import org.jooq.generated.tables.pojos.FilmActor
-import org.jooq.impl.Internal.fields
 import org.springframework.stereotype.Repository
 
 @Repository
