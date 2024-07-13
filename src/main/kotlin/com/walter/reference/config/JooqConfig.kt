@@ -9,9 +9,11 @@ import org.springframework.context.annotation.Configuration
 class JooqConfig {
     @Bean
     fun jooqDefaultConfigurationCustomizer(): DefaultConfigurationCustomizer {
-        return DefaultConfigurationCustomizer { config -> config.settings()
-            .withExecuteUpdateWithoutWhere(ExecuteWithoutWhere.THROW)
-            .withExecuteDeleteWithoutWhere(ExecuteWithoutWhere.THROW)
-            .withRenderSchema(false) }
+        return DefaultConfigurationCustomizer { config ->
+            config.set(PerformanceListener())
+            config.settings()
+                .withExecuteUpdateWithoutWhere(ExecuteWithoutWhere.THROW)
+                .withExecuteDeleteWithoutWhere(ExecuteWithoutWhere.THROW)
+                .withRenderSchema(false) }
     }
 }
