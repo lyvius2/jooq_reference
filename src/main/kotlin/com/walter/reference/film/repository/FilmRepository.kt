@@ -9,7 +9,6 @@ import org.jooq.generated.tables.JFilmActor
 import org.jooq.generated.tables.pojos.Actor
 import org.jooq.generated.tables.pojos.Film
 import org.jooq.generated.tables.pojos.FilmActor
-import org.jooq.types.UInteger
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -19,10 +18,9 @@ class FilmRepository(
     private val FILM: JFilm = JFilm.FILM
 
     fun findById(id: Long): Film? {
-        val uIntegerId = UInteger.valueOf(id)
         return dslContext.select(*FILM.fields())
             .from(FILM)
-            .where(FILM.FILM_ID.eq(uIntegerId))
+            .where(FILM.FILM_ID.eq(id))
             .fetchOneInto(Film::class.java)
     }
 
@@ -32,7 +30,7 @@ class FilmRepository(
                 FILM.TITLE,
                 FILM.DESCRIPTION)
             .from(FILM)
-            .where(FILM.FILM_ID.eq(UInteger.valueOf(id)))
+            .where(FILM.FILM_ID.eq(id))
             .fetchOneInto(SimpleFilmInfo::class.java)
     }
 

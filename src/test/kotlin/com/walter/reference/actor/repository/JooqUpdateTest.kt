@@ -3,7 +3,6 @@ package com.walter.reference.actor.repository
 import com.walter.reference.actor.dto.ActorUpdateRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.jooq.generated.tables.pojos.Actor
-import org.jooq.types.UInteger
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -48,7 +47,7 @@ class JooqUpdateTest(
         val updateResult = actorRepository.updateWithDto(id, request)
 
         // then
-        val updatedActor = actorRepository.findById(UInteger.valueOf(id!!))
+        val updatedActor = actorRepository.findById(id)
         assertThat(updatedActor).isNotNull
         assertThat(updatedActor!!.firstName).isEqualTo(request.firstName)
         assertThat(updatedActor.lastName).isEqualTo(newActor.lastName)
@@ -69,7 +68,7 @@ class JooqUpdateTest(
         val updateResult = actorRepository.updateWithRecord(id, request)
 
         // then
-        val updatedActor = actorRepository.findById(UInteger.valueOf(id!!))
+        val updatedActor = actorRepository.findById(id)
         assertThat(updatedActor).isNotNull
         assertThat(updatedActor!!.firstName).isEqualTo(request.firstName)
         assertThat(updatedActor.lastName).isEqualTo(newActor.lastName)
@@ -90,7 +89,7 @@ class JooqUpdateTest(
 
         // then
         assertThat(resultCode).isEqualTo(1)
-        val result = actorRepository.findById(UInteger.valueOf(id!!))
+        val result = actorRepository.findById(id)
         assertThat(result).isNull()
     }
 

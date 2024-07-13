@@ -8,11 +8,11 @@ import org.springframework.util.CollectionUtils
 
 class JooqListConditionUtil {
     companion object {
-        fun <T> inIfNotEmpty(actorId: Field<T?>, uIntegerIds: List<T>?): Condition {
-            if (CollectionUtils.isEmpty(uIntegerIds)) {
+        fun <T> inIfNotEmpty(actorId: Field<T?>, ids: List<T>?): Condition {
+            if (CollectionUtils.isEmpty(ids)) {
                 return DSL.noCondition()
             }
-            return actorId.`in`(uIntegerIds)
+            return actorId.`in`(ids)
         }
 
         fun containsIfNotBlank(field: Field<String?>, inputValue: String?): Condition {
