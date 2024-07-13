@@ -1,5 +1,5 @@
-import org.jooq.impl.SQLDataType
 import org.jooq.meta.jaxb.ForcedType
+import org.jooq.meta.jaxb.Property
 
 plugins {
     id("org.springframework.boot") version "3.2.7"
@@ -43,8 +43,11 @@ dependencies {
 
     //jooqGenerator("com.mysql:mysql-connector-j")
     jooqGenerator(project(":jOOQ-custom"))
+    jooqGenerator(project(":jpa-entity"))
     jooqGenerator("org.jooq:jooq:${jooqVersion}")
     jooqGenerator("org.jooq:jooq-meta:${jooqVersion}")
+    jooqGenerator("org.jooq:jooq-meta-extensions-hibernate:${jooqVersion}")
+    jooqGenerator("com.h2database:h2:1.4.200")
     jooqGenerator("jakarta.xml.bind:jakarta.xml.bind-api:4.0.0")
 }
 
@@ -64,16 +67,29 @@ jooq {
     configurations {
         create("sakilaDb") {
             jooqConfiguration.apply {
-                jdbc.apply {
+/*                jdbc.apply {
                     url = "jdbc:mysql://localhost:3306/sakila"
                     user = System.getenv("DB_USER")
                     password = System.getenv("DB_PASSWORD")
-                }
+                }*/
                 generator.apply {
                     name = "org.jooq.codegen.KotlinGenerator"
                     database.apply {
-                        name = "org.jooq.meta.mysql.MySQLDatabase"
-                        inputSchema = "sakila"
+                        //name = "org.jooq.meta.mysql.MySQLDatabase"
+                        name = "org.jooq.meta.extensions.jpa.JPADatabase"
+                        properties.addAll(
+                            listOf(
+                                Property().apply {
+                                    key = "packages"
+                                    value = "com.walter.entity"
+                                },
+                                Property().apply {
+                                    key = "useAttributeConverters"
+                                    value = "true"
+                                }
+                            )
+                        )
+                        //inputSchema = "sakila"
                         isUnsignedTypes = true
                         forcedTypes.addAll(
                             listOf(
