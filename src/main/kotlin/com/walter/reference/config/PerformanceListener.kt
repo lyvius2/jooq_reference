@@ -19,7 +19,8 @@ class PerformanceListener(
 
     override fun executeEnd(ctx: ExecuteContext?) {
         val queryTimeNano = watch.split()
-        if (queryTimeNano > SLOW_QUERY_LIMIT!!.nano) {
+        val limit = SLOW_QUERY_LIMIT!!.toNanos()
+        if (queryTimeNano > limit) {
             val query = ctx!!.query()
             val executeTime = Duration.ofNanos(queryTimeNano)
             log!!.warn(
