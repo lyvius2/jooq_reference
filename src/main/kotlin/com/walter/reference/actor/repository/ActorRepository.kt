@@ -45,14 +45,8 @@ class ActorRepository(
     }
 
     fun findByActorIdIn(ids: List<Long>?): List<Actor> {
-        var uIntegerIds: MutableList<UInteger>? = null
-        if (ids != null) {
-            uIntegerIds = ids.stream()
-                .map { UInteger.valueOf(it) }
-                .toList()
-        }
         return dslContext.selectFrom(ACTOR)
-            .where(JooqListConditionUtil.inIfNotEmpty(ACTOR.ACTOR_ID, uIntegerIds))
+            .where(JooqListConditionUtil.inIfNotEmpty(ACTOR.ACTOR_ID, ids))
             .fetchInto(Actor::class.java)
     }
 
@@ -129,15 +123,15 @@ class ActorRepository(
         actorDao.update(actor)
     }
 
-    fun findById(actorId: UInteger?): Actor? {
-        return actorDao.findById(actorId)
+    fun findById(id: Long?): Actor? {
+        return actorDao.findById(id)
     }
 
     fun updateWithDto(id: Long?, request: ActorUpdateRequest): Int {
         return dslContext.update(ACTOR)
             .set(ACTOR.FIRST_NAME, createValidatedSetter(request.firstName, ACTOR.FIRST_NAME))
             .set(ACTOR.LAST_NAME, createValidatedSetter(request.lastName, ACTOR.LAST_NAME))
-            .where(ACTOR.ACTOR_ID.eq(UInteger.valueOf(id!!)))
+            .where(ACTOR.ACTOR_ID.eq(id))
             .execute()
     }
 
@@ -149,8 +143,7 @@ class ActorRepository(
     }
 
     fun updateWithRecord(id: Long?, request: ActorUpdateRequest): Int {
-        val uIntegerId = UInteger.valueOf(id!!)
-        val actorRecord = dslContext.fetchOne(ACTOR, ACTOR.ACTOR_ID.eq(uIntegerId)) ?: return 0
+        val actorRecord = dslContext.fetchOne(ACTOR, ACTOR.ACTOR_ID.eq(id)) ?: return 0
         
         if (StringUtils.hasText(request.firstName)) {
             actorRecord.firstName = request.firstName
@@ -162,24 +155,22 @@ class ActorRepository(
 
         return dslContext.update(ACTOR)
             .set(actorRecord)
-            .where(ACTOR.ACTOR_ID.eq(uIntegerId))
+            .where(ACTOR.ACTOR_ID.eq(id))
             .execute()
     }
 
     fun delete(id: Long?): Int {
         return dslContext.deleteFrom(ACTOR)
-            .where(ACTOR.ACTOR_ID.eq(UInteger.valueOf(id!!)))
+            .where(ACTOR.ACTOR_ID.eq(id))
             .execute()
     }
 
     fun deleteWithRecord(id: Long?): Int {
-        val uIntegerId = UInteger.valueOf(id!!)
-        val actorRecord = dslContext.fetchOne(ACTOR, ACTOR.ACTOR_ID.eq(uIntegerId)) ?: return 0
+        val actorRecord = dslContext.fetchOne(ACTOR, ACTOR.ACTOR_ID.eq(id)) ?: return 0
         return actorRecord.delete()
     }
 
-    fun findRecordByActorId(actorId: Long): ActorRecord? {
-        val id = UInteger.valueOf(actorId)
+    fun findRecordByActorId(id: Long): ActorRecord? {
         return dslContext.fetchOne(ACTOR, ACTOR.ACTOR_ID.eq(id))
     }
 }

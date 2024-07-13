@@ -20,8 +20,6 @@ import org.jooq.impl.DSL.inline
 import org.jooq.impl.DSL.select
 import org.jooq.impl.DSL.selectCount
 import org.jooq.impl.DSL.selectOne
-import org.jooq.types.UInteger
-import org.jooq.types.UShort
 import org.springframework.stereotype.Repository
 import java.math.BigDecimal
 
@@ -32,12 +30,11 @@ class FilmRepositoryHasA(
     val filmDao: FilmDao = FilmDao(configuration),
 ) {
     fun findById(id: Long): Film? {
-        val uIntegerId = UInteger.valueOf(id)
-        return filmDao.fetchOneByJFilmId(uIntegerId)
+        return filmDao.fetchOneByJFilmId(id)
     }
 
     fun findByRangeBetween(from: Int, to: Int): List<Film> {
-        return filmDao.fetchRangeOfJLength(UShort.valueOf(from), UShort.valueOf(to))
+        return filmDao.fetchRangeOfJLength(from, to)
     }
 
     fun findFilmPriceSummaryByFilmTitle(filmTitle: String): List<FilmPriceSummary> {

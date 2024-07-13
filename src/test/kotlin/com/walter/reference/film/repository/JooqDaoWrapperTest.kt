@@ -1,8 +1,6 @@
 package com.walter.reference.film.repository
 
 import org.assertj.core.api.Assertions.assertThat
-import org.jooq.types.UInteger
-import org.jooq.types.UShort
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -15,7 +13,7 @@ class JooqDaoWrapperTest(
     @Test
     fun testIsA() {
         // given
-        val id = UInteger.valueOf(10L)
+        val id = 10L
 
         // when
         val film = filmRepositoryIsA.findById(id)
@@ -35,7 +33,7 @@ class JooqDaoWrapperTest(
 
         // when
         assertThat(films).allSatisfy {
-            assertThat(it.length).isBetween(UShort.valueOf(from), UShort.valueOf(to))
+            assertThat(it.length).isBetween(from, to)
         }
     }
 }

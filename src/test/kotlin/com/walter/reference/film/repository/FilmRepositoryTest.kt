@@ -39,8 +39,8 @@ class FilmRepositoryTest(
     @DisplayName("3) 영화와 영화에 출연한 배우의 정보를 페이징하여 조회")
     fun pagingTest() {
         // given
-        val page = 0L
-        val pageSize = 0L
+        val page = 1L
+        val pageSize = 10L
 
         // when
         val fileWithActors = filmRepository.findFilmWithActorList(page, pageSize)
